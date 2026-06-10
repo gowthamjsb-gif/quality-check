@@ -106,15 +106,26 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
         except Exception:
             pass
 
-    # If quality is stored in the child rows, pick from first matching row.
+    # If quality or color is stored in the child rows, pick from matching row.
     for df in shaft.meta.get_table_fields():
         child_rows = getattr(shaft, df.fieldname, None) or []
         for row in child_rows:
+            row_batch = getattr(row, "batch_no", None)
+            if batch_no and row_batch and str(row_batch).strip() != str(batch_no).strip():
+                continue
+                
             if qc.quality in (None, "") and hasattr(row, "quality"):
                 if getattr(row, "quality", None):
                     qc.quality = row.quality
-                    break
-        if qc.quality:
+                    
+            if not qc.color and hasattr(row, "color"):
+                qc.color = getattr(row, "color", None)
+            if not qc.color and hasattr(row, "custom_color"):
+                qc.color = getattr(row, "custom_color", None)
+                
+            if qc.quality and qc.color:
+                break
+        if qc.quality and qc.color:
             break
 
     # Extract Roll No if batch_no contains '/'
