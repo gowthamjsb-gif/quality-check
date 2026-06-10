@@ -161,18 +161,21 @@ function recalc_parent_summary(frm) {
     const sectionsField = get_sections_field(frm);
     if (!sectionsField) return;
     const rows = frm.doc[sectionsField] || [];
-    let passSections = 0;
-    let failSections = 0;
+    let passSamples = 0;
+    let failSamples = 0;
 
     rows.forEach((r) => {
-        if (r.section_result === "PASS") passSections += 1;
-        else if (r.section_result === "FAIL") failSections += 1;
+        passSamples += (r.pass_count || 0);
+        failSamples += (r.fail_count || 0);
     });
+    
+    // Each section has exactly 25 samples
+    let totalSamples = rows.length * 25;
 
-    safe_set_value(frm, "gsm_total_sections", rows.length);
-    safe_set_value(frm, "gsm_pass_sections", passSections);
-    safe_set_value(frm, "gsm_fail_sections", failSections);
-    safe_set_value(frm, "gsm_overall_result", rows.length ? (failSections > 0 ? "FAIL" : "PASS") : "");
+    safe_set_value(frm, "gsm_total_samples", totalSamples);
+    safe_set_value(frm, "gsm_pass_samples", passSamples);
+    safe_set_value(frm, "gsm_fail_samples", failSamples);
+    safe_set_value(frm, "gsm_overall_result", totalSamples ? (failSamples > 0 ? "FAIL" : "PASS") : "");
 }
 
 
