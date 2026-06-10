@@ -1,7 +1,6 @@
 ["Quality Checking"].forEach((parentDoctype) => {
 frappe.ui.form.on(parentDoctype, {
     refresh(frm) {
-        add_load_gsm_button(frm);
         recalc_all_sections(frm);
         render_custom_html_grid(frm);
     },

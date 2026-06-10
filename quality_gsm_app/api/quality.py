@@ -88,9 +88,14 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
     qc.quality = getattr(shaft, "quality", None)
     
     # Fetch additional fields from shaft
-    qc.order_code = getattr(shaft, "order_code", None)
-    qc.unit = getattr(shaft, "unit", None)
+    qc.order_code = getattr(shaft, "custom_order_code", None)
+    qc.unit = getattr(shaft, "custom_unit", None)
     qc.shift = getattr(shaft, "shift", None)
+    
+    color_val = getattr(shaft, "custom_color", None)
+    if not color_val:
+        color_val = getattr(shaft, "color", None)
+    qc.color = color_val
     
     # Fetch fabric_type from Production Plan
     prod_plan_id = getattr(shaft, "production_plan", None)
