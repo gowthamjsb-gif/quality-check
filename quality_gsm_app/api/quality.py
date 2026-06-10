@@ -84,7 +84,19 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
 
     qc = frappe.new_doc("Quality Checking")
     
-    # Only set this field if the testing_type field exists (we'll add it via patch)
+    # Check if the testing_type field exists, if not run the patch dynamically
+    if not hasattr(qc, "testing_type"):
+        try:
+            from quality_gsm_app.patches.v2_10_add_tensile_testing import execute
+            execute()
+            frappe.db.commit()
+            
+            # Reload metadata
+            frappe.clear_cache(doctype="Quality Checking")
+            qc = frappe.new_doc("Quality Checking")
+        except Exception as e:
+            frappe.log_error("Failed to run Tensile patch dynamically", str(e))
+    
     if hasattr(qc, "testing_type"):
         qc.testing_type = testing_type
         
