@@ -40,7 +40,7 @@
     border: 1px solid #d6eaf8;
   }
 
-  .info-table td {
+  .info-table td, .info-table th {
     padding: 14px 18px;
     border: 1px solid #d6eaf8;
     vertical-align: middle;
@@ -84,21 +84,11 @@
     font-weight: 700;
     color: #555;
   }
-
-  .result-pass {
-    color: #27ae60;
-    font-weight: 900;
-  }
-
-  .result-fail {
-    color: #c0392b;
-    font-weight: 900;
-  }
 </style>
 
 <div class="gsm-report-container">
   <div class="gsm-header">
-    <h2>GSM TESTING REPORT</h2>
+    <h2>TENSILE TESTING REPORT</h2>
     <div class="sub-title">Quality Checking: {{ doc.name }}</div>
   </div>
 
@@ -126,7 +116,6 @@
             <td class="info-label">Unit:</td>
             <td>{{ doc.unit or "-" }}</td>
           </tr>
-
         </table>
       </td>
       <td style="width: 50%; padding-left: 20px; vertical-align: top; border: none;">
@@ -136,16 +125,16 @@
             <td>{{ doc.order_code or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Quality:</td>
-            <td>{{ doc.quality or "-" }}</td>
+            <td class="info-label">Test Method:</td>
+            <td>{{ doc.test_method or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Color:</td>
-            <td>{{ doc.color or "-" }}</td>
+            <td class="info-label">Template Width:</td>
+            <td>{{ doc.cutting_template_width or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Fabric Type:</td>
-            <td>{{ doc.fabric_type or "-" }}</td>
+            <td class="info-label">Template Height:</td>
+            <td>{{ doc.cutting_template_height or "-" }}</td>
           </tr>
           <tr>
             <td class="info-label">Date:</td>
@@ -156,26 +145,49 @@
     </tr>
   </table>
 
+  <!-- Tensile Samples Data Grid -->
+  <table class="info-table" style="text-align: center;">
+      <thead>
+        <tr>
+          <th style="background: #1e3c72; color: #fff; padding: 12px;">PROPERTIES</th>
+          <th style="background: #1e3c72; color: #fff; padding: 12px;">UOM</th>
+          <th style="background: #1e3c72; color: #fff; padding: 12px;">SAMPLE 1</th>
+          <th style="background: #1e3c72; color: #fff; padding: 12px;">SAMPLE 2</th>
+          <th style="background: #1e3c72; color: #fff; padding: 12px;">SAMPLE 3</th>
+          <th style="background: #1e3c72; color: #fff; padding: 12px;">SAMPLE 4</th>
+          <th style="background: #1e3c72; color: #fff; padding: 12px;">SAMPLE 5</th>
+          <th style="background: #f39c12; color: #fff; padding: 12px;">AVERAGE</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if doc.tensile_sections %}
+          {% for row in doc.tensile_sections %}
+          <tr>
+            <td style="font-weight: bold; color: #2c3e50; text-align: left;">{{ row.properties or "-" }}</td>
+            <td style="font-weight: bold; color: #16a085;">{{ row.uom or "-" }}</td>
+            <td>{{ row.sample_1 if row.sample_1 is not none else "-" }}</td>
+            <td>{{ row.sample_2 if row.sample_2 is not none else "-" }}</td>
+            <td>{{ row.sample_3 if row.sample_3 is not none else "-" }}</td>
+            <td>{{ row.sample_4 if row.sample_4 is not none else "-" }}</td>
+            <td>{{ row.sample_5 if row.sample_5 is not none else "-" }}</td>
+            <td style="font-weight: bold; color: #d35400;">
+              {% if row.average is not none %}{{ "{:.2f}".format(row.average) }}{% else %}-{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="8" style="padding: 20px; color: #7f8c8d; font-style: italic;">No samples recorded.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+  </table>
+
   <div class="summary-box">
     <div class="summary-title">Testing Summary</div>
     <div class="summary-row">
-      <span class="summary-label">Total Samples:</span>
-      <span style="font-weight: bold; color: #2c3e50;">{{ doc.gsm_total_samples or 0 }}</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Pass Samples:</span>
-      <span class="result-pass">{{ doc.gsm_pass_samples or 0 }}</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Fail Samples:</span>
-      <span class="result-fail">{{ doc.gsm_fail_samples or 0 }}</span>
-    </div>
-    <div class="summary-row" style="margin-top: 18px; font-size: 18px; border-top: 2px dashed #fad7a1; padding-top: 18px;">
-      <span class="summary-label" style="color: #d35400;">Overall Result:</span>
-      {% set result = (doc.gsm_overall_result or "-") %}
-      <span class="{{ 'result-pass' if result == 'PASS' else ('result-fail' if result == 'FAIL' else '') }}">
-        {{ result }}
-      </span>
+      <span class="summary-label">Total Samples Taken:</span>
+      <span style="font-weight: bold; color: #2c3e50;">{{ doc.tensile_total_samples or 0 }}</span>
     </div>
   </div>
 

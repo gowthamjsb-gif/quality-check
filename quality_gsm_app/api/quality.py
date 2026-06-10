@@ -47,7 +47,7 @@ def get_batches_from_shaft(shaft_production_run: str):
 
 
 @frappe.whitelist()
-def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str = None):
+def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str = None, testing_type: str = "GSM Testing"):
     """
     Creates one `Quality Checking` document for the given Shaft Production Run,
     and auto-fills `sections` (one row per unique GSM) filtered by batch_no if provided.
@@ -57,7 +57,7 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
 
     shaft = frappe.get_doc("Shaft Production Run", shaft_production_run)
     
-    # Filter GSM values based on the selected batch
+    # Filter GSM values based on the selected batch (only for GSM Testing)
     all_gsm_values = []
     if hasattr(shaft, "items") and shaft.items:
         for row in shaft.items:
@@ -79,10 +79,15 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
     
     gsm_values = sorted(set(v for v in all_gsm_values if v > 0))
     
-    if not gsm_values:
+    if not gsm_values and testing_type == "GSM Testing":
         frappe.throw("No GSM values found for the selected batch.")
 
     qc = frappe.new_doc("Quality Checking")
+    
+    # Only set this field if the testing_type field exists (we'll add it via patch)
+    if hasattr(qc, "testing_type"):
+        qc.testing_type = testing_type
+        
     qc.shaft_production_run = shaft.name
     qc.batch_no = batch_no or getattr(shaft, "batch_no", None)
     qc.quality = getattr(shaft, "quality", None)
@@ -134,10 +139,11 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
         qc.batch_no = parts[0].strip()
         qc.roll_no = parts[1].strip()
 
-    for gsm in gsm_values:
-        child = qc.append("sections", {})
-        child.representative_gsm = gsm
-        child.quality = qc.quality
+    if testing_type == "GSM Testing":
+        for gsm in gsm_values:
+            child = qc.append("sections", {})
+            child.representative_gsm = gsm
+            child.quality = qc.quality
 
     qc.insert(ignore_permissions=True)
     frappe.db.commit()

@@ -1,8 +1,14 @@
 ["Quality Checking"].forEach((parentDoctype) => {
 frappe.ui.form.on(parentDoctype, {
     refresh(frm) {
-        recalc_all_sections(frm);
-        render_custom_html_grid(frm);
+        toggle_testing_type_fields(frm);
+        if (frm.doc.testing_type !== 'Tensile Testing') {
+            recalc_all_sections(frm);
+            render_custom_html_grid(frm);
+        }
+    },
+    testing_type(frm) {
+        toggle_testing_type_fields(frm);
     },
     validate(frm) {
         recalc_all_sections(frm);
@@ -14,11 +20,73 @@ frappe.ui.form.on(parentDoctype, {
                 frappe.model.set_value(row.doctype, row.name, "quality", frm.doc.quality || "");
             }
         });
-        recalc_all_sections(frm);
-        render_custom_html_grid(frm);
+        if (frm.doc.testing_type !== 'Tensile Testing') {
+            recalc_all_sections(frm);
+            render_custom_html_grid(frm);
+        }
     }
 });
 });
+
+frappe.ui.form.on("Tensile Testing Result", {
+    sample_1: calc_tensile_row,
+    sample_2: calc_tensile_row,
+    sample_3: calc_tensile_row,
+    sample_4: calc_tensile_row,
+    sample_5: calc_tensile_row,
+    tensile_sections_remove: function(frm) {
+        recalc_tensile_total_samples(frm);
+    }
+});
+
+function calc_tensile_row(frm, cdt, cdn) {
+    const row = frappe.get_doc(cdt, cdn);
+    let total = 0;
+    let count = 0;
+    ['sample_1', 'sample_2', 'sample_3', 'sample_4', 'sample_5'].forEach(f => {
+        if (row[f] !== undefined && row[f] !== null && row[f] !== '') {
+            total += flt(row[f]);
+            count++;
+        }
+    });
+    const avg = count > 0 ? total / count : 0;
+    frappe.model.set_value(cdt, cdn, 'average', avg);
+    
+    recalc_tensile_total_samples(frm);
+}
+
+function recalc_tensile_total_samples(frm) {
+    let count = 0;
+    (frm.doc.tensile_sections || []).forEach(row => {
+        ['sample_1', 'sample_2', 'sample_3', 'sample_4', 'sample_5'].forEach(f => {
+            if (row[f] !== undefined && row[f] !== null && row[f] !== '') count++;
+        });
+    });
+    safe_set_value(frm, 'tensile_total_samples', count);
+}
+
+function toggle_testing_type_fields(frm) {
+    const is_tensile = frm.doc.testing_type === 'Tensile Testing';
+    
+    frm.toggle_display('test_method', is_tensile);
+    frm.toggle_display('cutting_template_width', is_tensile);
+    frm.toggle_display('cutting_template_height', is_tensile);
+    frm.toggle_display('tensile_sections', is_tensile);
+    frm.toggle_display('tensile_total_samples', is_tensile);
+
+    frm.toggle_display('sections', !is_tensile);
+    frm.toggle_display('custom_gsm_grid_html', !is_tensile);
+    frm.toggle_display('gsm_total_samples', !is_tensile);
+    frm.toggle_display('gsm_pass_samples', !is_tensile);
+    frm.toggle_display('gsm_fail_samples', !is_tensile);
+    frm.toggle_display('gsm_overall_result', !is_tensile);
+    
+    if (is_tensile) {
+        recalc_tensile_total_samples(frm);
+    } else {
+        render_custom_html_grid(frm);
+    }
+}
 
 ["Quality Checking Section"].forEach((childDoctype) => {
 frappe.ui.form.on(childDoctype, {
