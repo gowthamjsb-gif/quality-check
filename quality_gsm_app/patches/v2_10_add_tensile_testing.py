@@ -54,6 +54,10 @@ def execute():
                 doc.read_only = field["read_only"]
             
             doc.insert(ignore_permissions=True)
+            
+    # Force the database schema to update
+    dt = frappe.get_doc("DocType", PARENT_DTYPE)
+    dt.save(ignore_permissions=True)
 
     # 3. Update Client Scripts
     update_client_scripts()

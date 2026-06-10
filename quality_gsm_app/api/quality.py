@@ -89,6 +89,11 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
         try:
             from quality_gsm_app.patches.v2_10_add_tensile_testing import execute
             execute()
+            
+            # Force schema update for the DocType
+            dt = frappe.get_doc("DocType", "Quality Checking")
+            dt.save(ignore_permissions=True)
+            
             frappe.db.commit()
             
             # Reload metadata
