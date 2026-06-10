@@ -63,6 +63,12 @@ def create_quality_checking_from_shaft(shaft_production_run: str):
         if qc.batch_no and qc.quality:
             break
 
+    # Extract Roll No if batch_no contains '/'
+    if qc.batch_no and "/" in qc.batch_no:
+        parts = qc.batch_no.split("/", 1)
+        qc.batch_no = parts[0].strip()
+        qc.roll_no = parts[1].strip()
+
     for gsm in gsm_values:
         child = qc.append("sections", {})
         child.representative_gsm = gsm

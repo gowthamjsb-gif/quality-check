@@ -10,3 +10,4 @@ quality_gsm_app.patches.v2_3.enforce_field_permanence
 quality_gsm_app.patches.v2_4.fix_quality_fieldtype
 quality_gsm_app.patches.v2_5.add_custom_grid_and_expand_samples
 quality_gsm_app.patches.v2_6_inject_client_scripts
+quality_gsm_app.patches.v2_7_add_roll_no_and_reorder

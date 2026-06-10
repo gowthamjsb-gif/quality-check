@@ -193,10 +193,10 @@ function render_custom_html_grid(frm) {
 
     let html = `
         <style>
-            .gsm-excel-grid { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; font-family: Inter, sans-serif; table-layout: fixed; }
-            .gsm-excel-grid th, .gsm-excel-grid td { border: 1px solid #d1d8dd; padding: 4px; text-align: center; overflow: hidden; }
+            .gsm-excel-grid { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; font-family: Inter, sans-serif; table-layout: fixed; }
+            .gsm-excel-grid th, .gsm-excel-grid td { border: 1px solid #d1d8dd; padding: 6px 4px; text-align: center; overflow: hidden; }
             .gsm-excel-grid th { background-color: #f3f3f3; font-weight: bold; }
-            .gsm-excel-grid input { width: 100%; border: none; text-align: center; font-size: 11px; background: transparent; outline: none; }
+            .gsm-excel-grid input { width: 100%; border: none; text-align: center; font-size: 13px; background: transparent; outline: none; }
             .gsm-excel-grid input:focus { background-color: #e2e8f0; }
             .row-header { font-weight: bold; background-color: #f8f9fa; text-align: left !important; width: 100px; }
             .section-wrapper { margin-bottom: 30px; overflow-x: auto; }
