@@ -1,182 +1,230 @@
 <meta name="pdfkit-orientation" content="Portrait" />
 <meta name="pdfkit-page-size" content="A4" />
 <style>
-  .gsm-report-container {
-    font-family: Inter, "Segoe UI", sans-serif;
-    color: #2c3e50;
-    padding: 10px;
-    max-width: 800px;
-    margin: 0 auto;
+  .report {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #000;
+    padding: 8px;
   }
 
-  .gsm-header {
-    text-align: center;
-    margin-bottom: 30px;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: #ffffff;
-    padding: 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  .company-header {
+    margin-bottom: 32px;
   }
 
-  .gsm-header h2 {
-    margin: 0;
-    font-size: 26px;
-    letter-spacing: 1px;
-    color: #ffffff;
-  }
-
-  .gsm-header .sub-title {
-    color: #d1d8e0;
-    font-size: 15px;
-    margin-top: 8px;
-  }
-
-  .info-table {
+  .company-header table {
     width: 100%;
-    margin-bottom: 30px;
-    font-size: 14.5px;
+    border: none;
     border-collapse: collapse;
-    border: 1px solid #d6eaf8;
   }
 
-  .info-table td {
-    padding: 14px 18px;
-    border: 1px solid #d6eaf8;
+  .company-header td {
+    border: none;
+    vertical-align: middle;
+    padding: 0;
+  }
+
+  .company-logo {
+    width: 80px;
+    height: auto;
+    display: block;
+  }
+
+  .company-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: #38761d;
+    letter-spacing: 0.5px;
+  }
+
+  .company-tagline {
+    font-size: 11px;
+    color: #7f6000;
+    margin-top: 2px;
+  }
+
+  .doc-title {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 0 0 18px;
+    text-transform: uppercase;
+  }
+
+  .meta-layout {
+    width: 100%;
+    border: none;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+
+  .meta-layout > tbody > tr > td {
+    border: none;
+    vertical-align: top;
+    width: 50%;
+    padding: 0 6px 0 0;
+  }
+
+  .meta-layout > tbody > tr > td:last-child {
+    padding: 0 0 0 6px;
+  }
+
+  .meta-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+  }
+
+  .meta-table td {
+    border: 1px solid #000;
+    padding: 8px 10px;
     vertical-align: middle;
   }
 
-  .info-table td.info-label {
-    font-weight: bold;
-    color: #1f618d;
-    width: 1%;
-    white-space: nowrap;
-    background: #ebf5fb;
-  }
-
-  .summary-box {
-    background: #fffaf0;
-    border: 1px solid #fdebd0;
-    border-left: 6px solid #f39c12;
-    border-radius: 8px;
-    padding: 24px;
-    margin-top: 30px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  }
-
-  .summary-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: #d35400;
-    margin-bottom: 18px;
-    border-bottom: 2px solid #fad7a1;
-    padding-bottom: 10px;
-  }
-
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 14px;
+  .meta-table td:not(.label-cell) {
     font-size: 15px;
+    font-weight: 600;
   }
 
-  .summary-label {
-    font-weight: 700;
-    color: #555;
+  .label-cell {
+    background: #d9ead3;
+    font-weight: bold;
+    width: 42%;
+    text-transform: uppercase;
+    font-size: 13px;
+  }
+
+  .summary-section {
+    margin-top: 20px;
+  }
+
+  .summary-heading {
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .summary-table {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    border-collapse: collapse;
+  }
+
+  .summary-table td {
+    border: 1px solid #000;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  .summary-table .label-cell {
+    width: 55%;
+    font-size: 12px;
+  }
+
+  .summary-value {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    width: 45%;
   }
 
   .result-pass {
-    color: #27ae60;
-    font-weight: 900;
+    color: #38761d;
   }
 
   .result-fail {
-    color: #c0392b;
-    font-weight: 900;
+    color: #cc0000;
   }
 </style>
 
-<div class="gsm-report-container">
-  <div class="gsm-header">
-    <h2>GSM TESTING REPORT</h2>
-    <div class="sub-title">Quality Checking: {{ doc.name }}</div>
+<div class="report">
+  <div class="company-header">
+    <table>
+      <tr>
+        <td style="width: 100px;">
+          <img class="company-logo" src="{{ frappe.utils.get_url() }}/files/Untitled-2.jpg" alt="Company Logo" />
+        </td>
+      </tr>
+    </table>
   </div>
 
-  <table style="width: 100%; border: none; margin-bottom: 30px;">
+  <div class="doc-title">GSM Testing Report</div>
+
+  <table class="meta-layout">
     <tr>
-      <td style="width: 50%; padding-right: 20px; vertical-align: top; border: none;">
-        <table class="info-table" style="margin-bottom: 0;">
+      <td>
+        <table class="meta-table">
           <tr>
-            <td class="info-label">SPR Id:</td>
+            <td class="label-cell">Report Number</td>
+            <td>{{ doc.name or "-" }}</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Date</td>
+            <td>{{ frappe.utils.formatdate(doc.creation, "dd-MM-yyyy") if doc.creation else "-" }}</td>
+          </tr>
+          <tr>
+            <td class="label-cell">SPR Id</td>
             <td>{{ doc.shaft_production_run or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Shift:</td>
+            <td class="label-cell">Shift</td>
             <td>{{ doc.shift or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Batch No:</td>
+            <td class="label-cell">Batch No</td>
             <td>{{ doc.batch_no or "-" }}</td>
           </tr>
-          <tr>
-            <td class="info-label">Roll No:</td>
-            <td>{{ doc.roll_no or "-" }}</td>
-          </tr>
-          <tr>
-            <td class="info-label">Unit:</td>
-            <td>{{ doc.unit or "-" }}</td>
-          </tr>
-
         </table>
       </td>
-      <td style="width: 50%; padding-left: 20px; vertical-align: top; border: none;">
-        <table class="info-table" style="margin-bottom: 0;">
+      <td>
+        <table class="meta-table">
           <tr>
-            <td class="info-label">Order Code:</td>
+            <td class="label-cell">Unit</td>
+            <td>{{ doc.unit or "-" }}</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Order Code</td>
             <td>{{ doc.order_code or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Quality:</td>
+            <td class="label-cell">Roll No</td>
+            <td>{{ doc.roll_no or "-" }}</td>
+          </tr>
+          <tr>
+            <td class="label-cell">Quality</td>
             <td>{{ doc.quality or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Color:</td>
+            <td class="label-cell">Colour</td>
             <td>{{ doc.color or "-" }}</td>
           </tr>
           <tr>
-            <td class="info-label">Fabric Type:</td>
+            <td class="label-cell">Fabric Type</td>
             <td>{{ doc.fabric_type or "-" }}</td>
-          </tr>
-          <tr>
-            <td class="info-label">Date:</td>
-            <td>{{ doc.creation[:10] }}</td>
           </tr>
         </table>
       </td>
     </tr>
   </table>
 
-  <div class="summary-box">
-    <div class="summary-title">Testing Summary</div>
-    <div class="summary-row">
-      <span class="summary-label">Total Samples:</span>
-      <span style="font-weight: bold; color: #2c3e50;">{{ doc.gsm_total_samples or 0 }}</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Pass Samples:</span>
-      <span class="result-pass">{{ doc.gsm_pass_samples or 0 }}</span>
-    </div>
-    <div class="summary-row">
-      <span class="summary-label">Fail Samples:</span>
-      <span class="result-fail">{{ doc.gsm_fail_samples or 0 }}</span>
-    </div>
-    <div class="summary-row" style="margin-top: 18px; font-size: 18px; border-top: 2px dashed #fad7a1; padding-top: 18px;">
-      <span class="summary-label" style="color: #d35400;">Overall Result:</span>
-      {% set result = (doc.gsm_overall_result or "-") %}
-      <span class="{{ 'result-pass' if result == 'PASS' else ('result-fail' if result == 'FAIL' else '') }}">
-        {{ result }}
-      </span>
-    </div>
+  <div class="summary-section">
+    <div class="summary-heading">Testing Summary</div>
+    <table class="summary-table">
+      <tr>
+        <td class="label-cell">Total Samples</td>
+        <td class="summary-value">{{ doc.gsm_total_samples or 0 }}</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Pass Samples</td>
+        <td class="summary-value result-pass">{{ doc.gsm_pass_samples or 0 }}</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Fail Samples</td>
+        <td class="summary-value result-fail">{{ doc.gsm_fail_samples or 0 }}</td>
+      </tr>
+    </table>
   </div>
-
 </div>

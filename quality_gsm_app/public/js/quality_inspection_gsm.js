@@ -9,6 +9,12 @@ frappe.ui.form.on(parentDoctype, {
     },
     testing_type(frm) {
         toggle_testing_type_fields(frm);
+        set_auto_naming_series(frm);
+    },
+    unit(frm) {
+        if (frm.is_new()) {
+            set_auto_naming_series(frm);
+        }
     },
     validate(frm) {
         recalc_all_sections(frm);
@@ -80,12 +86,42 @@ function toggle_testing_type_fields(frm) {
     frm.toggle_display('gsm_pass_samples', !is_tensile);
     frm.toggle_display('gsm_fail_samples', !is_tensile);
     frm.toggle_display('gsm_overall_result', !is_tensile);
-    
+
+    // Set read_only states
+    const keep_editable = ['testing_type'];
+    frm.meta.fields.forEach(f => {
+        if (!keep_editable.includes(f.fieldname)) {
+            frm.set_df_property(f.fieldname, 'read_only', 1);
+        }
+    });
+
     if (is_tensile) {
+        frm.set_df_property('test_method', 'read_only', 0);
+        frm.set_df_property('cutting_template_width', 'read_only', 0);
+        frm.set_df_property('cutting_template_height', 'read_only', 0);
+        frm.set_df_property('tensile_sections', 'read_only', 0);
         recalc_tensile_total_samples(frm);
     } else {
+        frm.set_df_property('sections', 'read_only', 0);
+        frm.set_df_property('custom_gsm_grid_html', 'read_only', 0);
         render_custom_html_grid(frm);
     }
+}
+
+function set_auto_naming_series(frm) {
+    if (!frm.is_new()) return;
+    
+    const is_tensile = frm.doc.testing_type === 'Tensile Testing';
+    const unit_map = {
+        "unit 1": "U1",
+        "unit 2": "U2",
+        "unit 3": "U3",
+        "unit 4": "U4"
+    };
+    const unit_val = (frm.doc.unit || "").toLowerCase();
+    const u = unit_map[unit_val] || "U1";
+    const prefix = is_tensile ? "TT" : "GSM";
+    frm.set_value("naming_series", `JSB/${prefix}-${u}/26-27/.###`);
 }
 
 ["Quality Checking Section"].forEach((childDoctype) => {

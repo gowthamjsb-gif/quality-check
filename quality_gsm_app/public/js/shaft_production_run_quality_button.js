@@ -5,6 +5,11 @@ frappe.ui.form.on("Shaft Production Run", {
             return;
         }
 
+        const unit = (frm.doc.custom_unit || "").toLowerCase();
+        if (!unit.includes("unit 1") && !unit.includes("unit 2") && !unit.includes("unit 3") && !unit.includes("unit 4")) {
+            return;
+        }
+
         frm.add_custom_button(
             __("Start GSM Testing"),
             () => {

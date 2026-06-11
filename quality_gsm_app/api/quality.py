@@ -162,6 +162,18 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
             child.representative_gsm = gsm
             child.quality = qc.quality
 
+    # Set naming_series
+    unit_val = str(qc.unit or "").lower()
+    unit_map = {
+        "unit 1": "U1",
+        "unit 2": "U2",
+        "unit 3": "U3",
+        "unit 4": "U4"
+    }
+    u = unit_map.get(unit_val, "U1")
+    prefix = "TT" if testing_type == "Tensile Testing" else "GSM"
+    qc.naming_series = f"JSB/{prefix}-{u}/26-27/.###"
+
     qc.insert(ignore_permissions=True)
     frappe.db.commit()
     return qc.name

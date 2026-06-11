@@ -81,16 +81,51 @@
     font-size: 13px;
   }
 
+  .summary-section,
   .results-section {
     margin-top: 20px;
   }
 
+  .summary-heading,
   .results-heading {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
     text-transform: uppercase;
     margin-bottom: 10px;
+  }
+
+  .summary-table {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    border-collapse: collapse;
+  }
+
+  .summary-table td {
+    border: 1px solid #000;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  .summary-table .label-cell {
+    width: 55%;
+    font-size: 12px;
+  }
+
+  .summary-value {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    width: 45%;
+  }
+
+  .result-pass {
+    color: #38761d;
+  }
+
+  .result-fail {
+    color: #cc0000;
   }
 
   .data-table {
@@ -135,7 +170,11 @@
     </table>
   </div>
 
+  {% if doc.testing_type == 'Tensile Testing' %}
   <div class="doc-title">Tensile Testing Report</div>
+  {% else %}
+  <div class="doc-title">GSM Testing Report</div>
+  {% endif %}
 
   <table class="meta-layout">
     <tr>
@@ -162,6 +201,8 @@
             <td>{{ doc.batch_no or "-" }}</td>
           </tr>
         </table>
+
+        {% if doc.testing_type == 'Tensile Testing' %}
         <table class="meta-table">
           <tr>
             <td class="label-cell">Test Method</td>
@@ -176,6 +217,7 @@
             <td>{{ doc.cutting_template_height or "-" }}</td>
           </tr>
         </table>
+        {% endif %}
       </td>
       <td>
         <table class="meta-table">
@@ -208,6 +250,7 @@
     </tr>
   </table>
 
+  {% if doc.testing_type == 'Tensile Testing' %}
   <div class="results-section">
     <div class="results-heading">Test Results</div>
     <table class="data-table">
@@ -245,4 +288,23 @@
       </tbody>
     </table>
   </div>
+  {% else %}
+  <div class="summary-section">
+    <div class="summary-heading">Testing Summary</div>
+    <table class="summary-table">
+      <tr>
+        <td class="label-cell">Total Samples</td>
+        <td class="summary-value">{{ doc.gsm_total_samples or 0 }}</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Pass Samples</td>
+        <td class="summary-value result-pass">{{ doc.gsm_pass_samples or 0 }}</td>
+      </tr>
+      <tr>
+        <td class="label-cell">Fail Samples</td>
+        <td class="summary-value result-fail">{{ doc.gsm_fail_samples or 0 }}</td>
+      </tr>
+    </table>
+  </div>
+  {% endif %}
 </div>
