@@ -1,8 +1,7 @@
 import frappe
+import os
 
-
-def _sync_client_scripts():
-    import os
+def execute():
     app_path = frappe.get_app_path("quality_gsm_app")
     
     scripts = {
@@ -21,6 +20,7 @@ def _sync_client_scripts():
         with open(full_path, "r", encoding="utf-8") as f:
             script_content = f.read()
             
+        # Check if client script already exists for this doctype
         existing = frappe.get_all("Client Script", filters={"dt": dt}, limit=1)
         if existing:
             cs = frappe.get_doc("Client Script", existing[0].name)
@@ -39,32 +39,3 @@ def _sync_client_scripts():
             }).insert(ignore_permissions=True)
 
     frappe.clear_cache()
-
-
-def _run_quality_checking_setup():
-    # Run latest schema setup in an idempotent way for cloud updates.
-    # Cloud-safe: create/update only the new main doctype (Quality Checking) and GSM schema.
-    from quality_gsm_app.patches.v2_0 import create_quality_checking_only
-    from quality_gsm_app.patches.v1_3 import force_quality_checking_parent_fix
-    from quality_gsm_app.patches.v1_4 import ensure_quality_checking_permissions
-    from quality_gsm_app.patches.v2_2 import update_gsm_report_layout_excel_style
-    from quality_gsm_app.patches.v2_3 import enforce_field_permanence
- 
-    create_quality_checking_only.execute()
-    force_quality_checking_parent_fix.execute()
-    ensure_quality_checking_permissions.execute()
-    update_gsm_report_layout_excel_style.execute()
-    enforce_field_permanence.execute()
-    
-    _sync_client_scripts()
-    
-    frappe.db.commit()
-
-
-def after_install():
-    _run_quality_checking_setup()
-
-
-def after_migrate():
-    _run_quality_checking_setup()
-
