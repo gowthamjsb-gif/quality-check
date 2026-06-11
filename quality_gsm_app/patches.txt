@@ -17,3 +17,4 @@ quality_gsm_app.patches.v2_11_add_combined_quality_print_format
 quality_gsm_app.patches.v2_12_add_naming_series
 quality_gsm_app.patches.v2_13_sync_client_scripts
 quality_gsm_app.patches.v2_14_cleanup_shaft_client_script
+quality_gsm_app.patches.v2_15_regex_cleanup

@@ -7,13 +7,18 @@ frappe.ui.form.on("Shaft Production Run", {
 
         const unit = (frm.doc.custom_unit || "").toLowerCase().replace(/ /g, "");
         if (!["unit1", "unit2", "unit3", "unit4"].includes(unit)) {
-            // Remove the buttons if they were added by any other script
-            setTimeout(() => {
+            // Remove the buttons if they were added by any other script (using interval to catch late renders)
+            let attempts = 0;
+            const cleanupInterval = setInterval(() => {
                 frm.remove_custom_button(__("Start GSM Testing"), __("Quality"));
                 frm.remove_custom_button(__("Start GSM Testing"), __("Quality Check"));
                 frm.remove_custom_button(__("Start Tensile Testing"), __("Quality"));
                 frm.remove_custom_button(__("Start Tensile Testing"), __("Quality Check"));
-            }, 150);
+                attempts++;
+                if (attempts > 30) {
+                    clearInterval(cleanupInterval);
+                }
+            }, 100);
             return;
         }
 
