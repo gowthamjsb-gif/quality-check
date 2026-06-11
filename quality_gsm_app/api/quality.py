@@ -162,15 +162,18 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
             child.representative_gsm = gsm
             child.quality = qc.quality
 
-    # Set naming_series
-    unit_val = str(qc.unit or "").lower()
+    unit_val_clean = str(qc.unit or "").lower().replace(" ", "")
+    valid_units = ["unit1", "unit2", "unit3", "unit4"]
+    if unit_val_clean not in valid_units:
+        frappe.throw("Quality Testing is only applicable for Unit 1, Unit 2, Unit 3, and Unit 4.")
+
     unit_map = {
-        "unit 1": "U1",
-        "unit 2": "U2",
-        "unit 3": "U3",
-        "unit 4": "U4"
+        "unit1": "U1",
+        "unit2": "U2",
+        "unit3": "U3",
+        "unit4": "U4"
     }
-    u = unit_map.get(unit_val, "U1")
+    u = unit_map.get(unit_val_clean, "U1")
     prefix = "TT" if testing_type == "Tensile Testing" else "GSM"
     qc.naming_series = f"JSB/{prefix}-{u}/26-27/.###"
 

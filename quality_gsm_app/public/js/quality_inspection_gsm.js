@@ -17,6 +17,12 @@ frappe.ui.form.on(parentDoctype, {
         }
     },
     validate(frm) {
+        const unit_val_clean = (frm.doc.unit || "").toLowerCase().replace(/ /g, "");
+        const valid_units = ["unit1", "unit2", "unit3", "unit4"];
+        if (!valid_units.includes(unit_val_clean)) {
+            frappe.msgprint(__("Quality Testing is only applicable for Unit 1, Unit 2, Unit 3, and Unit 4."));
+            frappe.validated = false;
+        }
         recalc_all_sections(frm);
     },
     quality(frm) {
@@ -113,13 +119,13 @@ function set_auto_naming_series(frm) {
     
     const is_tensile = frm.doc.testing_type === 'Tensile Testing';
     const unit_map = {
-        "unit 1": "U1",
-        "unit 2": "U2",
-        "unit 3": "U3",
-        "unit 4": "U4"
+        "unit1": "U1",
+        "unit2": "U2",
+        "unit3": "U3",
+        "unit4": "U4"
     };
-    const unit_val = (frm.doc.unit || "").toLowerCase();
-    const u = unit_map[unit_val] || "U1";
+    const unit_val_clean = (frm.doc.unit || "").toLowerCase().replace(/ /g, "");
+    const u = unit_map[unit_val_clean] || "U1";
     const prefix = is_tensile ? "TT" : "GSM";
     frm.set_value("naming_series", `JSB/${prefix}-${u}/26-27/.###`);
 }

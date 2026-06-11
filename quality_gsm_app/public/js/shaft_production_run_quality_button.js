@@ -5,8 +5,8 @@ frappe.ui.form.on("Shaft Production Run", {
             return;
         }
 
-        const unit = (frm.doc.custom_unit || "").toLowerCase();
-        if (!unit.includes("unit 1") && !unit.includes("unit 2") && !unit.includes("unit 3") && !unit.includes("unit 4")) {
+        const unit = (frm.doc.custom_unit || "").toLowerCase().replace(/ /g, "");
+        if (!["unit1", "unit2", "unit3", "unit4"].includes(unit)) {
             return;
         }
 
