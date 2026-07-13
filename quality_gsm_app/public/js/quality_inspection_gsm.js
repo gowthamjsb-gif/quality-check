@@ -1,16 +1,19 @@
 ["Quality Checking"].forEach((parentDoctype) => {
 frappe.ui.form.on(parentDoctype, {
     setup(frm) {
-        // Disable fetch_from for these fields so they can be set via route options or manually
-        const fields_to_unfetch = [
-            'batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no'
-        ];
-        fields_to_unfetch.forEach(f => {
-            let df = frappe.meta.get_docfield(frm.doctype, f, frm.docname);
-            if (df && df.fetch_from) {
-                df.fetch_from = '';
-            }
-        });
+        try {
+            // Disable fetch_from for these fields so they can be set via route options or manually
+            const fields_to_unfetch = [
+                'batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no'
+            ];
+            fields_to_unfetch.forEach(f => {
+                if (frm.fields_dict[f] && frm.fields_dict[f].df) {
+                    frm.fields_dict[f].df.fetch_from = '';
+                }
+            });
+        } catch (e) {
+            console.error("Error in setup:", e);
+        }
     },
     refresh(frm) {
         if (frm.is_new() && frm.fields_dict.date && !frm.doc.date) {
