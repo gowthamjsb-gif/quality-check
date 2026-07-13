@@ -20,6 +20,32 @@ frappe.ui.form.on(parentDoctype, {
             frm.set_value('date', frappe.datetime.get_today());
         }
         toggle_testing_type_fields(frm);
+        
+        // Auto-load GSM sections if redirecting with a Shaft Production Run
+        if (frm.is_new() && frm.doc.testing_type !== 'Tensile Testing' && frm.doc.shaft_production_run) {
+            const sectionsField = get_sections_field(frm);
+            if (sectionsField && (!frm.doc[sectionsField] || frm.doc[sectionsField].length === 0)) {
+                frappe.call({
+                    method: "quality_gsm_app.api.quality.get_unique_gsm_values",
+                    args: { shaft_production_run: frm.doc.shaft_production_run },
+                    callback: (r) => {
+                        const values = (r.message || []).map((v) => flt(v)).filter((v) => v > 0);
+                        if (values.length) {
+                            frm.clear_table(sectionsField);
+                            values.forEach((gsm) => {
+                                const row = frm.add_child(sectionsField);
+                                row.representative_gsm = gsm;
+                                row.quality = frm.doc.quality || "";
+                            });
+                            frm.refresh_field(sectionsField);
+                            recalc_all_sections(frm);
+                            render_custom_html_grid(frm);
+                        }
+                    }
+                });
+            }
+        }
+
         if (frm.doc.testing_type !== 'Tensile Testing') {
             recalc_all_sections(frm);
             render_custom_html_grid(frm);
@@ -27,11 +53,17 @@ frappe.ui.form.on(parentDoctype, {
     },
     shaft_production_run(frm) {
         if (frm.doc.shaft_production_run) {
-            frappe.db.get_value('Shaft Production Run', frm.doc.shaft_production_run, 
-                ['batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no']
-            ).then(r => {
-                if (r && r.message) {
-                    frappe.model.set_value(frm.doctype, frm.docname, r.message);
+            frappe.model.with_doc('Shaft Production Run', frm.doc.shaft_production_run, () => {
+                let doc = frappe.model.get_doc('Shaft Production Run', frm.doc.shaft_production_run);
+                if (doc) {
+                    let fields_to_fetch = ['batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no'];
+                    let updates = {};
+                    fields_to_fetch.forEach(f => {
+                        if (doc[f] !== undefined) updates[f] = doc[f];
+                    });
+                    if (Object.keys(updates).length > 0) {
+                        frappe.model.set_value(frm.doctype, frm.docname, updates);
+                    }
                 }
             });
         }
