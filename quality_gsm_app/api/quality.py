@@ -2,7 +2,7 @@ import frappe
 
 
 @frappe.whitelist()
-def get_unique_gsm_values(shaft_production_run: str):
+def get_unique_gsm_values(shaft_production_run: str, batch_no: str = None):
     if not shaft_production_run:
         return []
 
@@ -13,6 +13,10 @@ def get_unique_gsm_values(shaft_production_run: str):
     for df in doc.meta.get_table_fields():
         child_rows = getattr(doc, df.fieldname, None) or []
         for row in child_rows:
+            row_batch = getattr(row, "batch_no", None)
+            if batch_no and row_batch and str(row_batch).strip() != str(batch_no).strip():
+                continue
+                
             gsm = getattr(row, "gsm", None) if hasattr(row, "gsm") else row.get("gsm")
             if gsm in (None, "") and hasattr(row, "sticker_gsm"):
                 gsm = getattr(row, "sticker_gsm", None)

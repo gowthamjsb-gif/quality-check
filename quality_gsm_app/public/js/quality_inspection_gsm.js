@@ -20,6 +20,9 @@ frappe.ui.form.on(parentDoctype, {
             frm.set_value('date', frappe.datetime.get_today());
         }
         toggle_testing_type_fields(frm);
+        if (frm.is_new()) {
+            set_auto_naming_series(frm);
+        }
         
         // Auto-load GSM sections if redirecting with a Shaft Production Run
         if (frm.is_new() && frm.doc.testing_type !== 'Tensile Testing' && frm.doc.shaft_production_run) {
@@ -27,7 +30,10 @@ frappe.ui.form.on(parentDoctype, {
             if (sectionsField && (!frm.doc[sectionsField] || frm.doc[sectionsField].length === 0)) {
                 frappe.call({
                     method: "quality_gsm_app.api.quality.get_unique_gsm_values",
-                    args: { shaft_production_run: frm.doc.shaft_production_run },
+                    args: { 
+                        shaft_production_run: frm.doc.shaft_production_run,
+                        batch_no: frm.doc.batch_no
+                    },
                     callback: (r) => {
                         const values = (r.message || []).map((v) => flt(v)).filter((v) => v > 0);
                         if (values.length) {
@@ -253,7 +259,8 @@ function add_load_gsm_button(frm) {
         frappe.call({
             method: "quality_gsm_app.api.quality.get_unique_gsm_values",
             args: {
-                shaft_production_run: frm.doc.shaft_production_run
+                shaft_production_run: frm.doc.shaft_production_run,
+                batch_no: frm.doc.batch_no
             },
             callback: (r) => {
                 const values = (r.message || []).map((v) => flt(v)).filter((v) => v > 0);
