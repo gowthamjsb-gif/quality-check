@@ -1,6 +1,9 @@
 ["Quality Checking"].forEach((parentDoctype) => {
 frappe.ui.form.on(parentDoctype, {
     refresh(frm) {
+        if (frm.is_new() && frm.fields_dict.date && !frm.doc.date) {
+            frm.set_value('date', frappe.datetime.get_today());
+        }
         toggle_testing_type_fields(frm);
         if (frm.doc.testing_type !== 'Tensile Testing') {
             recalc_all_sections(frm);
@@ -94,7 +97,19 @@ function toggle_testing_type_fields(frm) {
     frm.toggle_display('gsm_overall_result', !is_tensile);
 
     // Set read_only states
-    const keep_editable = ['testing_type'];
+    const keep_editable = [
+        'testing_type',
+        'batch_no',
+        'order_code',
+        'shaft_production_run',
+        'quality',
+        'unit',
+        'color',
+        'shift',
+        'roll_no',
+        'gsm_production_entry',
+        'date'
+    ];
     frm.meta.fields.forEach(f => {
         if (!keep_editable.includes(f.fieldname)) {
             frm.set_df_property(f.fieldname, 'read_only', 1);
