@@ -156,6 +156,7 @@ function toggle_testing_type_fields(frm) {
 
     // Set read_only states
     const keep_editable = [
+        'naming_series',
         'testing_type',
         'batch_no',
         'order_code',
@@ -165,7 +166,11 @@ function toggle_testing_type_fields(frm) {
         'color',
         'shift',
         'roll_no',
-        'date'
+        'date',
+        'test_method',
+        'cutting_template_width',
+        'cutting_template_height',
+        'tensile_sections'
     ];
     frm.meta.fields.forEach(f => {
         if (!keep_editable.includes(f.fieldname)) {
