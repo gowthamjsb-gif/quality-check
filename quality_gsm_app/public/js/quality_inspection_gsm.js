@@ -113,6 +113,9 @@ function toggle_testing_type_fields(frm) {
     frm.meta.fields.forEach(f => {
         if (!keep_editable.includes(f.fieldname)) {
             frm.set_df_property(f.fieldname, 'read_only', 1);
+        } else {
+            // Explicitly unlock these fields to override DocType settings
+            frm.set_df_property(f.fieldname, 'read_only', 0);
         }
     });
 
