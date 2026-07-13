@@ -107,7 +107,7 @@ function create_quality_checking(shaft_name, batch_no, testing_type="GSM Testing
                 frappe.msgprint(__("Could not create Quality Checking doc."));
                 return;
             }
-            frappe.set_route("Form", "Quality Checking", name);
+            window.open(frappe.urllib.get_full_url('/app/quality-checking/' + name), '_blank');
         }
     });
 }
