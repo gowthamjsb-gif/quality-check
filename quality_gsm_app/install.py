@@ -49,12 +49,14 @@ def _run_quality_checking_setup():
     from quality_gsm_app.patches.v1_4 import ensure_quality_checking_permissions
     from quality_gsm_app.patches.v2_2 import update_gsm_report_layout_excel_style
     from quality_gsm_app.patches.v2_3 import enforce_field_permanence
- 
+    from quality_gsm_app.patches.v2_16_add_gsm_production_entry_field import execute as create_gsm_entry_field
+
     create_quality_checking_only.execute()
     force_quality_checking_parent_fix.execute()
     ensure_quality_checking_permissions.execute()
     update_gsm_report_layout_excel_style.execute()
     enforce_field_permanence.execute()
+    create_gsm_entry_field()
     
     _sync_client_scripts()
     
