@@ -1,5 +1,17 @@
 ["Quality Checking"].forEach((parentDoctype) => {
 frappe.ui.form.on(parentDoctype, {
+    setup(frm) {
+        // Disable fetch_from for these fields so they can be set via route options or manually
+        const fields_to_unfetch = [
+            'batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no'
+        ];
+        fields_to_unfetch.forEach(f => {
+            let df = frappe.meta.get_docfield(frm.doctype, f, frm.docname);
+            if (df && df.fetch_from) {
+                df.fetch_from = '';
+            }
+        });
+    },
     refresh(frm) {
         if (frm.is_new() && frm.fields_dict.date && !frm.doc.date) {
             frm.set_value('date', frappe.datetime.get_today());
@@ -8,6 +20,17 @@ frappe.ui.form.on(parentDoctype, {
         if (frm.doc.testing_type !== 'Tensile Testing') {
             recalc_all_sections(frm);
             render_custom_html_grid(frm);
+        }
+    },
+    shaft_production_run(frm) {
+        if (frm.doc.shaft_production_run) {
+            frappe.db.get_value('Shaft Production Run', frm.doc.shaft_production_run, 
+                ['batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no']
+            ).then(r => {
+                if (r && r.message) {
+                    frappe.model.set_value(frm.doctype, frm.docname, r.message);
+                }
+            });
         }
     },
     testing_type(frm) {
