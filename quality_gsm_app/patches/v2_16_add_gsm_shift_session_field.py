@@ -4,16 +4,17 @@ import os
 def execute():
     PARENT_DTYPE = "Quality Checking"
 
-    # Add gsm_production_entry field below shaft_production_run
-    if not frappe.db.exists("DocField", {"parent": PARENT_DTYPE, "fieldname": "gsm_production_entry"}):
+    # Add gsm_shift_session field below shaft_production_run
+    if not frappe.db.exists("DocField", {"parent": PARENT_DTYPE, "fieldname": "gsm_shift_session"}):
         frappe.get_doc({
             "doctype": "DocField",
             "parent": PARENT_DTYPE,
             "parenttype": "DocType",
             "parentfield": "fields",
-            "fieldname": "gsm_production_entry",
-            "label": "GSM Production Entry",
-            "fieldtype": "Data",
+            "fieldname": "gsm_shift_session",
+            "label": "GSM Shift Session",
+            "fieldtype": "Link",
+            "options": "GSM Shift Session",
             "insert_after": "shaft_production_run"
         }).insert(ignore_permissions=True)
 

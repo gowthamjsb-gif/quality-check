@@ -165,7 +165,7 @@ function toggle_testing_type_fields(frm) {
         'color',
         'shift',
         'roll_no',
-        'gsm_production_entry',
+        'gsm_shift_session',
         'date'
     ];
     frm.meta.fields.forEach(f => {
