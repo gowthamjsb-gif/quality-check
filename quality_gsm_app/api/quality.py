@@ -83,6 +83,18 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
     
     gsm_values = sorted(set(v for v in all_gsm_values if v > 0))
     
+    if not gsm_values:
+        main_gsm = getattr(shaft, "gsm", "")
+        if main_gsm:
+            import re
+            nums = re.findall(r'\d+(?:\.\d+)?', str(main_gsm))
+            for n in nums:
+                try:
+                    all_gsm_values.append(float(n))
+                except ValueError:
+                    pass
+            gsm_values = sorted(set(v for v in all_gsm_values if v > 0))
+    
     if not gsm_values and testing_type in ("Round Cutting GSM Test", "Patty Cutting GSM Test"):
         frappe.throw("No GSM values found for the selected batch.")
 

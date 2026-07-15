@@ -30,15 +30,16 @@ frappe.ui.form.on("Shaft Production Run", {
                     args: { shaft_production_run: frm.doc.name },
                     callback: (r) => {
                         const batches = r.message || [];
-                        if (!batches.length) {
-                            create_quality_checking(frm.doc.name, null, "Round Cutting GSM Test");
-                            return;
+                        let prompt_field = { fieldtype: "Data", fieldname: "batch_no", label: __("Enter Batch No (Optional)") };
+                        if (batches.length) {
+                            prompt_field = { fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 };
                         }
                         
                         frappe.prompt(
-                            [{ fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 }],
+                            [prompt_field],
                             (values) => { create_quality_checking(frm.doc.name, values.batch_no, "Round Cutting GSM Test"); },
-                            __("Select Batch"), __("Start Testing")
+                            batches.length ? __("Select Batch") : __("Start Testing"), 
+                            __("Start Testing")
                         );
                     }
                 });
@@ -54,15 +55,16 @@ frappe.ui.form.on("Shaft Production Run", {
                     args: { shaft_production_run: frm.doc.name },
                     callback: (r) => {
                         const batches = r.message || [];
-                        if (!batches.length) {
-                            create_quality_checking(frm.doc.name, null, "Patty Cutting GSM Test");
-                            return;
+                        let prompt_field = { fieldtype: "Data", fieldname: "batch_no", label: __("Enter Batch No (Optional)") };
+                        if (batches.length) {
+                            prompt_field = { fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 };
                         }
                         
                         frappe.prompt(
-                            [{ fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 }],
+                            [prompt_field],
                             (values) => { create_quality_checking(frm.doc.name, values.batch_no, "Patty Cutting GSM Test"); },
-                            __("Select Batch"), __("Start Testing")
+                            batches.length ? __("Select Batch") : __("Start Testing"), 
+                            __("Start Testing")
                         );
                     }
                 });
@@ -78,15 +80,16 @@ frappe.ui.form.on("Shaft Production Run", {
                     args: { shaft_production_run: frm.doc.name },
                     callback: (r) => {
                         const batches = r.message || [];
-                        if (!batches.length) {
-                            create_quality_checking(frm.doc.name, null, "Tensile Testing");
-                            return;
+                        let prompt_field = { fieldtype: "Data", fieldname: "batch_no", label: __("Enter Batch No (Optional)") };
+                        if (batches.length) {
+                            prompt_field = { fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 };
                         }
                         
                         frappe.prompt(
-                            [{ fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 }],
+                            [prompt_field],
                             (values) => { create_quality_checking(frm.doc.name, values.batch_no, "Tensile Testing"); },
-                            __("Select Batch"), __("Start Testing")
+                            batches.length ? __("Select Batch") : __("Start Testing"), 
+                            __("Start Testing")
                         );
                     }
                 });
