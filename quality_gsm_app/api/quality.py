@@ -123,6 +123,10 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
         color_val = getattr(shaft, "color", None)
     qc.color = color_val
     
+    run_date_val = getattr(shaft, "run_date", None)
+    if run_date_val:
+        qc.date = run_date_val
+    
     # Fetch fabric_type from Production Plan
     prod_plan_id = getattr(shaft, "production_plan", None)
     if prod_plan_id:

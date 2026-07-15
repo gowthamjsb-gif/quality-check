@@ -4,7 +4,7 @@ frappe.ui.form.on(parentDoctype, {
         try {
             // Disable fetch_from for these fields so they can be set via route options or manually
             const fields_to_unfetch = [
-                'batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no'
+                'batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no', 'date'
             ];
             fields_to_unfetch.forEach(f => {
                 if (frm.fields_dict[f] && frm.fields_dict[f].df) {
@@ -67,6 +67,25 @@ frappe.ui.form.on(parentDoctype, {
                     fields_to_fetch.forEach(f => {
                         if (doc[f] !== undefined) updates[f] = doc[f];
                     });
+                    if (doc.run_date !== undefined) updates['date'] = doc.run_date;
+                    if (Object.keys(updates).length > 0) {
+                        frappe.model.set_value(frm.doctype, frm.docname, updates);
+                    }
+                }
+            });
+        }
+    },
+    gsm_production_entry(frm) {
+        if (frm.doc.gsm_production_entry) {
+            frappe.model.with_doc('GSM Production Entry', frm.doc.gsm_production_entry, () => {
+                let doc = frappe.model.get_doc('GSM Production Entry', frm.doc.gsm_production_entry);
+                if (doc) {
+                    let fields_to_fetch = ['batch_no', 'order_code', 'quality', 'unit', 'color', 'shift', 'roll_no'];
+                    let updates = {};
+                    fields_to_fetch.forEach(f => {
+                        if (doc[f] !== undefined) updates[f] = doc[f];
+                    });
+                    if (doc.run_date !== undefined) updates['date'] = doc.run_date;
                     if (Object.keys(updates).length > 0) {
                         frappe.model.set_value(frm.doctype, frm.docname, updates);
                     }
@@ -167,6 +186,7 @@ function toggle_testing_type_fields(frm) {
         'batch_no',
         'order_code',
         'shaft_production_run',
+        'gsm_production_entry',
         'quality',
         'unit',
         'color',
