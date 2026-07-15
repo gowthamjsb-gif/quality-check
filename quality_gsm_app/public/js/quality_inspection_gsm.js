@@ -164,11 +164,14 @@ function recalc_tensile_total_samples(frm) {
 }
 
 function toggle_testing_type_fields(frm) {
+    if (!frm.doc.testing_type) return;
+
     const is_tensile = frm.doc.testing_type === 'Tensile Testing';
-    
+    const is_patty = frm.doc.testing_type === 'Patty Cutting GSM Test';
+
     frm.toggle_display('test_method', is_tensile);
-    frm.toggle_display('cutting_template_width', is_tensile);
-    frm.toggle_display('cutting_template_height', is_tensile);
+    frm.toggle_display('cutting_template_width', is_tensile || is_patty);
+    frm.toggle_display('cutting_template_height', is_tensile || is_patty);
     frm.toggle_display('tensile_sections', is_tensile);
     frm.toggle_display('tensile_total_samples', is_tensile);
 
@@ -221,18 +224,24 @@ function toggle_testing_type_fields(frm) {
 }
 
 function set_auto_naming_series(frm) {
-    if (!frm.is_new()) return;
+    if (!frm.is_new() || !frm.doc.unit || !frm.doc.testing_type) return;
     
-    const is_tensile = frm.doc.testing_type === 'Tensile Testing';
+    let prefix = "RGSM";
+    if (frm.doc.testing_type === "Tensile Testing") {
+        prefix = "TT";
+    } else if (frm.doc.testing_type === "Patty Cutting GSM Test") {
+        prefix = "PGSM";
+    }
+
+    const unit_clean = frm.doc.unit.toLowerCase().replace(/\s+/g, '');
     const unit_map = {
         "unit1": "U1",
         "unit2": "U2",
         "unit3": "U3",
         "unit4": "U4"
     };
-    const unit_val_clean = (frm.doc.unit || "").toLowerCase().replace(/ /g, "");
-    const u = unit_map[unit_val_clean] || "U1";
-    const prefix = is_tensile ? "TT" : "GSM";
+    const u = unit_map[unit_clean] || "U1";
+    
     frm.set_value("naming_series", `JSB/${prefix}-${u}/26-27/.###`);
 }
 

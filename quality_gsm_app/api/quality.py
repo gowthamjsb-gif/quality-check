@@ -51,7 +51,7 @@ def get_batches_from_shaft(shaft_production_run: str):
 
 
 @frappe.whitelist()
-def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str = None, testing_type: str = "GSM Testing"):
+def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str = None, testing_type: str = "Round Cutting GSM Test"):
     """
     Creates one `Quality Checking` document for the given Shaft Production Run,
     and auto-fills `sections` (one row per unique GSM) filtered by batch_no if provided.
@@ -61,7 +61,7 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
 
     shaft = frappe.get_doc("Shaft Production Run", shaft_production_run)
     
-    # Filter GSM values based on the selected batch (only for GSM Testing)
+    # Filter GSM values based on the selected batch (only for GSM Testing variants)
     all_gsm_values = []
     if hasattr(shaft, "items") and shaft.items:
         for row in shaft.items:
@@ -83,7 +83,7 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
     
     gsm_values = sorted(set(v for v in all_gsm_values if v > 0))
     
-    if not gsm_values and testing_type == "GSM Testing":
+    if not gsm_values and testing_type in ("Round Cutting GSM Test", "Patty Cutting GSM Test"):
         frappe.throw("No GSM values found for the selected batch.")
 
     qc = frappe.new_doc("Quality Checking")
@@ -164,7 +164,7 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
         qc.batch_no = parts[0].strip()
         qc.roll_no = parts[1].strip()
 
-    if testing_type == "GSM Testing":
+    if testing_type in ("Round Cutting GSM Test", "Patty Cutting GSM Test"):
         for gsm in gsm_values:
             child = qc.append("sections", {})
             child.representative_gsm = gsm
@@ -182,7 +182,13 @@ def create_quality_checking_from_shaft(shaft_production_run: str, batch_no: str 
         "unit4": "U4"
     }
     u = unit_map.get(unit_val_clean, "U1")
-    prefix = "TT" if testing_type == "Tensile Testing" else "GSM"
+    if testing_type == "Tensile Testing":
+        prefix = "TT"
+    elif testing_type == "Patty Cutting GSM Test":
+        prefix = "PGSM"
+    else:
+        prefix = "RGSM"
+        
     qc.naming_series = f"JSB/{prefix}-{u}/26-27/.###"
 
     qc.insert(ignore_permissions=True)

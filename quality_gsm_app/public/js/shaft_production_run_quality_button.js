@@ -23,7 +23,7 @@ frappe.ui.form.on("Shaft Production Run", {
         }
 
         frm.add_custom_button(
-            __("Start GSM Testing"),
+            __("Round Cutting GSM Test"),
             () => {
                 frappe.call({
                     method: "quality_gsm_app.api.quality.get_batches_from_shaft",
@@ -31,24 +31,14 @@ frappe.ui.form.on("Shaft Production Run", {
                     callback: (r) => {
                         const batches = r.message || [];
                         if (!batches.length) {
-                            // Fallback if no batches found, just create without batch selection
-                            create_quality_checking(frm.doc.name, null);
+                            create_quality_checking(frm.doc.name, null, "Round Cutting GSM Test");
                             return;
                         }
                         
                         frappe.prompt(
-                            [{
-                                fieldtype: "Select",
-                                fieldname: "batch_no",
-                                label: __("Select Batch No"),
-                                options: batches,
-                                reqd: 1
-                            }],
-                            (values) => {
-                                create_quality_checking(frm.doc.name, values.batch_no, "GSM Testing");
-                            },
-                            __("Select Batch"),
-                            __("Start Testing")
+                            [{ fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 }],
+                            (values) => { create_quality_checking(frm.doc.name, values.batch_no, "Round Cutting GSM Test"); },
+                            __("Select Batch"), __("Start Testing")
                         );
                     }
                 });
@@ -57,7 +47,7 @@ frappe.ui.form.on("Shaft Production Run", {
         );
 
         frm.add_custom_button(
-            __("Start Tensile Testing"),
+            __("Patty Cutting GSM Test"),
             () => {
                 frappe.call({
                     method: "quality_gsm_app.api.quality.get_batches_from_shaft",
@@ -65,24 +55,38 @@ frappe.ui.form.on("Shaft Production Run", {
                     callback: (r) => {
                         const batches = r.message || [];
                         if (!batches.length) {
-                            // Fallback if no batches found, just create without batch selection
+                            create_quality_checking(frm.doc.name, null, "Patty Cutting GSM Test");
+                            return;
+                        }
+                        
+                        frappe.prompt(
+                            [{ fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 }],
+                            (values) => { create_quality_checking(frm.doc.name, values.batch_no, "Patty Cutting GSM Test"); },
+                            __("Select Batch"), __("Start Testing")
+                        );
+                    }
+                });
+            },
+            __("Quality Check")
+        );
+
+        frm.add_custom_button(
+            __("Tensile Testing"),
+            () => {
+                frappe.call({
+                    method: "quality_gsm_app.api.quality.get_batches_from_shaft",
+                    args: { shaft_production_run: frm.doc.name },
+                    callback: (r) => {
+                        const batches = r.message || [];
+                        if (!batches.length) {
                             create_quality_checking(frm.doc.name, null, "Tensile Testing");
                             return;
                         }
                         
                         frappe.prompt(
-                            [{
-                                fieldtype: "Select",
-                                fieldname: "batch_no",
-                                label: __("Select Batch No"),
-                                options: batches,
-                                reqd: 1
-                            }],
-                            (values) => {
-                                create_quality_checking(frm.doc.name, values.batch_no, "Tensile Testing");
-                            },
-                            __("Select Batch"),
-                            __("Start Testing")
+                            [{ fieldtype: "Select", fieldname: "batch_no", label: __("Select Batch No"), options: batches, reqd: 1 }],
+                            (values) => { create_quality_checking(frm.doc.name, values.batch_no, "Tensile Testing"); },
+                            __("Select Batch"), __("Start Testing")
                         );
                     }
                 });
