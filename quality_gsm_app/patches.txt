@@ -20,3 +20,4 @@ quality_gsm_app.patches.v2_14_cleanup_shaft_client_script
 quality_gsm_app.patches.v2_15_regex_cleanup
 quality_gsm_app.patches.v2_16_add_gsm_shift_session_field
 quality_gsm_app.patches.v2_17_remove_gsm_shift_session
+quality_gsm_app.patches.v2_18_add_date_field
